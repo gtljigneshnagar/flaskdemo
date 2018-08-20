@@ -1,0 +1,188 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='dashboard.css')}}">
+{% endblock %}
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script type="text/javascript" src="{{url_for('.static', filename='jquery-3.2.1.min.js')}}"></script>
+
+{% block content %}
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="{{ url_for('dashboard') }}">Book Store App</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <!--<li><a href="#">Dashboard</a></li>
+        <li><a href="#">Settings</a></li>
+        <li><a href="#">Profile</a></li>-->
+        <li><a href="{{ url_for('logout') }}">Log Out</a></li>
+      </ul>
+      <!--<form class="navbar-form navbar-right">
+        <input type="text" class="form-control" placeholder="Search...">
+      </form>-->
+    </div>
+  </div>
+</nav>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <!-- <strong>Title</strong> --> {{ message }}
+</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="container">
+  <div class="row">
+      <div class="col md-9">
+          <h1 class="page-header">Welcome {{ name }}</h1>
+          <h2 class="sub-header">
+              Book List <button type="button" class="btn btn-sucess pull-right" data-toggle="modal" data-target="#mymodal">
+                  Add New Book
+              </button>
+          </h2>
+          <div class="table-responsive">
+              <table class="table table-striped">
+                  <tr>
+                      <th>Book Name</th>
+                      <th>Author</th>
+                      <th>Publisher</th>
+                      <th>Language</th>
+                      <th>Genre</th>
+                      <th>Price</th>
+                      <th>Action</th>
+                  </tr>
+                  <tbody>
+                      {% for row in books %}
+                      <tr>
+                          <td>{{row.book_name}}</td>
+                          <td>{{row.author}}</td>
+                          <td>{{row.publisher}}</td>
+                          <td>{{row.language}}</td>
+                          <td>{{row.genre}}</td>
+                          <td>{{row.price}}</td>
+                          <td>
+                              <a href="/update/{{row.book_id}}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{row.book_id}}">Edit</a>
+                              <a href="/delete/{{row.book_id}}" class="btn btn-danger btn-xs" onclick="return confirm('Are You Sure To Delete?')">Delete</a>
+                          </td>
+                      </tr>
+                      <div id="modaledit{{row.book_id}}" class="modal fade" role="dialog">
+                          <div class="modal-dialog">
+                              <div class="modal-content">
+                                  <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                      <h4 class="modal-title">Update Information</h4>
+                                  </div>
+                                  <div class="modal-body">
+                                      <form action="{{ url_for('update') }}" method="POST">
+                                          <div class="form-group">
+                                              <label>Name:</label>
+                                              <input type="hidden" name="id" value="{{row.book_id}}">
+                                              <label>Book Name:</label>
+                                              <input type="text" class="form-control" name="bookname" value="{{row.book_name}}">
+                                          </div>
+                                          <div class="form-group">
+                                              <label>Author:</label>
+                                              <input type="text" class="form-control" name="author" value="{{row.author}}">
+                                          </div>
+                                          <div class="form-group">
+                                              <label>Publisher:</label>
+                                              <input type="text" class="form-control" name="publisher" value="{{row.publisher}}">
+                                          </div>
+                                          <div class="form-group">
+                                              <label>Language:</label>
+                                              <input type="text" class="form-control" name="language" value="{{row.language}}">
+                                          </div>
+                                          <div class="form-group">
+                                              <label>Genre:</label>
+                                              <input type="text" class="form-control" name="genre" value="{{row.genre}}">
+                                          </div>
+                                          <div class="form-group">
+                                              <label>Price:</label>
+                                              <input type="text" class="form-control" name="price" value="{{row.price}}">
+                                          </div>
+                                          <div class="form-group">
+                                              <button class="btn btn-primary" type="submit">Update</button>
+                                          </div>
+                                      </form>
+                                  </div>
+                                  <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+
+                      {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+          <!-- Modal -->
+
+          <div id="mymodal" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          <h4 class="modal-title">Please Insert Data</h4>
+                      </div>
+                      <div class="modal-body">
+                          <form action="{{ url_for('insert') }}" method="POST">
+                              <div class="form-group">
+                                  <label>Book Name:</label>
+                                  <input type="text" class="form-control" name="bookname" required="1">
+                              </div>
+                              <div class="form-group">
+                                  <label>Author:</label>
+                                  <input type="text" class="form-control" name="author" required="1">
+                              </div>
+                              <div class="form-group">
+                                  <label>Publisher:</label>
+                                  <input type="text" class="form-control" name="publisher" required="1">
+                              </div>
+                              <div class="form-group">
+                                  <label>Language:</label>
+                                  <input type="text" class="form-control" name="language" required="1">
+                              </div>
+                              <div class="form-group">
+                                  <label>Genre:</label>
+                                  <input type="text" class="form-control" name="genre" required="1">
+                              </div>
+                              <div class="form-group">
+                                  <label>Price:</label>
+                                  <input type="text" class="form-control" name="price" required="1">
+                              </div>
+                              <div class="form-group">
+                                  <button class="btn btn-primary" type="submit">Insert Data</button>
+                              </div>
+                          </form>
+                      </div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+{% endblock %}

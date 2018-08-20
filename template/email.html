@@ -1,0 +1,36 @@
+﻿{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+Login
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='signin.css')}}">
+{% endblock %}
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <!-- <strong>Title</strong> --> {{ message }}
+</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="container">
+
+    <form class="form-signin" method="POST" action="/email">
+        <h2 class="form-signin-heading">Find Your Account</h2>
+        {{ form.hidden_tag() }}
+        {{ wtf.form_field(form.reset_email) }}
+        <button id="fnd_act_btn" class="btn btn-lg btn-primary btn-block">Find account</button>
+    </form>
+
+</div> <!-- /container -->
+{% endblock %}
